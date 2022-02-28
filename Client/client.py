@@ -3,7 +3,7 @@ from random import randint
 from scapy.all import *
 
 seq = 1
-host = "0.0.0.0"
+host = "10.0.0.231"
 sport = random.randint(1024,65353)
 dport = 11414
 ip_packet = IP(dst=host)
@@ -46,9 +46,10 @@ def send_termin() :
     
 while True:
     usr_input = input().lower()
+    print(usr_input)
     if usr_input == "s" :
         send_hello()
     if usr_input == "t" :
         send_termin()
     else :
-        print("NO >:(")
+        pass

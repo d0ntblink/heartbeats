@@ -2,7 +2,7 @@
 
 from curses.ascii import ETB
 from struct import pack
-from scapy.layers.inet import TCP, IP
+from scapy.layers.inet import TCP, IP, Ether
 from scapy.sendrecv import sniff
 
 a_filter = "port 11414" # Captures TCP-PSH packets.
@@ -13,6 +13,7 @@ ip_list_dict = {}
 def prnt_pckt(packet):
     global ip_list_dict
     # ETHERNET WRAP
+    ip_proto = packet[Ether].type
     # IP WRAP
     dst_ip = packet[IP].src
     src_ip = packet[IP].dst
@@ -37,6 +38,7 @@ def prnt_pckt(packet):
     elif tcp_flag == "A" and pkt_size >= 60:
         print('''
         -- Ether INFO --
+        ip proto : {}
         --IP INFO--
         dst ip : {}
         src ip : {}
@@ -47,9 +49,10 @@ def prnt_pckt(packet):
         src port : {}
         dest port : {}
         data : {}
-        '''.format(dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+        '''.format(ip_proto, dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
     elif tcp_flag == "R":
         ip_list_dict[src_ip] = "closed"
+        print(ip_list_dict)
     else:
         pass
     
