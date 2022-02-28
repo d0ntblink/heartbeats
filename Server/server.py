@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 
-from curses.ascii import ETB
-from struct import pack
 from scapy.layers.inet import TCP, IP, Ether
 from scapy.sendrecv import sniff
+from scapy.all import *
 
-a_filter = "port 11414" # Captures TCP-PSH packets.
+
+local_ip = get_if_addr(conf.iface)
+a_filter = "port 11414"
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
 ip_list_dict = {}
 
 def prnt_pckt(packet):
-    global ip_list_dict
+    global ip_list_dict, local_ip
     # ETHERNET WRAP
     ip_proto = packet[Ether].type
     # IP WRAP
@@ -30,29 +31,28 @@ def prnt_pckt(packet):
     
 
     if tcp_flag == "S":
-        if src_ip in ip_list_dict :
-            pass
-        else:
+        if src_ip != local_ip and (src_ip not in ip_list_dict):
             ip_list_dict[src_ip] = "open"
             print(ip_list_dict)
-    elif tcp_flag == "A" and pkt_size >= 60:
-        print('''
-        -- Ether INFO --
-        ip proto : {}
-        --IP INFO--
-        dst ip : {}
-        src ip : {}
-        ip ver : {}
-        pkt size : {}
-        --TCP INFO--
-        tcp flag: {}
-        src port : {}
-        dest port : {}
-        data : {}
-        '''.format(ip_proto, dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
-    elif tcp_flag == "R":
-        ip_list_dict[src_ip] = "closed"
-        print(ip_list_dict)
+    elif tcp_flag == "A" and pkt_size >= 45:
+        if tcp_data == b'TERMINATE':
+            ip_list_dict[src_ip] = "closed"
+            print(ip_list_dict)
+        else:
+            print('''
+            -- Ether INFO --
+            ip proto : {}
+            --IP INFO--
+            dst ip : {}
+            src ip : {}
+            ip ver : {}
+            pkt size : {}
+            --TCP INFO--
+            tcp flag: {}
+            src port : {}
+            dest port : {}
+            data : {}
+            '''.format(ip_proto, dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
     else:
         pass
     

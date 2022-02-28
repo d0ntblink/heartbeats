@@ -27,7 +27,7 @@ def send_hello():
 
     # sending the ACK with message
     payload_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
-    payload = "hello its -A- me Mario"
+    payload = "HELLO"
 
     reply, error = sr(ip_packet/payload_packet/payload, multi=1, timeout=1)
     seq += 1
@@ -46,7 +46,7 @@ def send_termin() :
     
 while True:
     usr_input = input().lower()
-    print(usr_input)
+    # print(usr_input)
     if usr_input == "s" :
         send_hello()
     if usr_input == "t" :
