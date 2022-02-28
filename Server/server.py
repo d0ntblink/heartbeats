@@ -9,11 +9,12 @@ a_filter = "port 11414 && len >= 64" # Captures TCP-PSH packets.
 # print(devs)
 
 def prnt_pckt(packet):
+    # ETHERNET WRAP
+    ip_proto = packet[Ethernet].type
     # IP WRAP
     dst_ip = packet[IP].src
     src_ip = packet[IP].dst
     ip_ver = packet[IP].version
-    ip_proto = packet[IP].proto
     pkt_size = packet[IP].len
     # TCP WRAP
     tcp_src_p = packet[TCP].sport
@@ -25,18 +26,19 @@ def prnt_pckt(packet):
         tcp_data = "empty packet"
     
     print('''
+    -- Ether INFO --
+    ip proto : {}
     --IP INFO--
     dst ip : {}
     src ip : {}
     ip ver : {}
-    ip proto : {}
     pkt size : {}
     --TCP INFO--
     tcp flag: {}
     src port : {}
     dest port : {}
     data : {}
-    '''.format(dst_ip, src_ip, ip_ver, ip_proto, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+    '''.format(ip_proto, dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
 
 
 sniff(filter=a_filter, prn=prnt_pckt)
