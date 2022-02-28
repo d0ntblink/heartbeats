@@ -4,7 +4,7 @@ from struct import pack
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff
 
-a_filter = "port 11414 && len >= 45" # Captures TCP-PSH packets.
+a_filter = "port 11414 && len >= 64" # Captures TCP-PSH packets.
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
 
