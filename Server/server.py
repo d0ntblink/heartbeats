@@ -5,7 +5,7 @@ from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff
 
 # a_filter = "tcp[13] & 8!=0" # Captures TCP-PSH packets.
-a_filter = "tcp port 11414"
+a_filter = "tcp port 11414 tcp[13] & 8!=0"
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
 
