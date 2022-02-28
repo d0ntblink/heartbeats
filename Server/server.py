@@ -1,18 +1,39 @@
 #!/usr/bin/python3
 
+import threading, logging, time
 from scapy.layers.inet import TCP, IP, Ether
-from scapy.sendrecv import sniff
-from scapy.all import *
+from scapy.sendrecv import sniff, sr1, send, sr
+from scapy.arch import get_if_addr
 
 
 local_ip = get_if_addr(conf.iface)
-a_filter = "port 11414"
+# https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
+bp_filter = "port 11414 && (dst host {localip})".format(local_ip=local_ip)
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
 ip_list_dict = {}
+ip_timeout_dict = {}
+thread_list = []
 
-def prnt_pckt(packet):
-    global ip_list_dict, local_ip
+
+def start_a_thread(thread_name, thread_function,thread_num):
+    global thread_list
+    thread_name = threading.Thread(target=thread_function, args=(thread_num,))
+    thread_list.append(thread_name)
+    # logging.info("starting thread %d.", thread_num)
+    thread_name.start()
+
+
+def joining_threads():
+    global thread_list
+    for t_num, thread in enumerate(thread_list):
+        # logging.info("preparing thread %d.", t_num)
+        thread.join()
+        # logging.info("thread %d joined", t_num)
+    
+
+def analyze_pkt(packet):
+    global ip_list_dict, ip_timeout_dict, local_ip
     # ETHERNET WRAP
     ip_proto = packet[Ether].type
     # IP WRAP
@@ -28,33 +49,80 @@ def prnt_pckt(packet):
         tcp_data = packet[TCP].load
     except:
         tcp_data = "empty packet"
-    
-
+    # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
         if src_ip != local_ip and (src_ip not in ip_list_dict):
             ip_list_dict[src_ip] = "open"
-            print(ip_list_dict)
+            ip_timeout_dict[src_ip] = int(0)
+            print("session with {ip} has been opened".format(ip=src_ip))
     elif tcp_flag == "A" and pkt_size >= 45:
+        ip_timeout_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_list_dict[src_ip] = "closed"
-            print(ip_list_dict)
+            print("session with {ip} has been closed".format(ip=src_ip))
         else:
             print('''
             -- Ether INFO --
-            ip proto : {}
+            ip proto : {ipp}
             --IP INFO--
-            dst ip : {}
-            src ip : {}
-            ip ver : {}
-            pkt size : {}
+            dst ip : {dsp}
+            src ip : {srp}
+            ip ver : {ipv}
+            pkt size : {pks}
             --TCP INFO--
-            tcp flag: {}
-            src port : {}
-            dest port : {}
-            data : {}
-            '''.format(ip_proto, dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+            tcp flag: {tcf}
+            src port : {srp}
+            dest port : {dsp}
+            data : {dat}
+            '''.format(ipp=ip_proto, dsp=dst_ip, srp=src_ip, ipv=ip_ver, pks=pkt_size, tcf=tcp_flag, srp=tcp_src_p, dsp=tcp_dst_p, dat=tcp_data))
     else:
         pass
-    
-sniff(filter=a_filter, prn=prnt_pckt)
-# sniff(filter=a_filter, prn=lambda x: x.show())
+
+
+
+def send_msg(msg, dst_ip, sport, dport):
+    seq = 0
+    ip_packet = IP(dst=dst_ip)
+    # sending the syn package and receiving SYN_ACK
+    syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
+    packet = ip_packet/syn_packet
+    synack_response = sr1(packet)
+    seq += 1
+    # sending the ACK back
+    my_ack = synack_response.seq + 1
+    ack_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
+    send(ip_packet/ack_packet)
+    seq += 1
+    # sending the ACK with message
+    payload_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
+    payload = msg
+    reply, error = sr(ip_packet/payload_packet/payload, multi=1, timeout=1)
+    seq += 1
+    # for r in reply:
+    #     r[0].show2()
+    # r[1].show2()
+
+
+def heartbeat():
+    global ip_list_dict, ip_timeout_dict
+    for ip, sesh_sat in ip_list_dict:
+        if sesh_sat == "open":
+            time.sleep(1)
+            ip_timeout_dict[ip] += 1
+            logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
+            if ip_timeout_dict >= 60:
+                logging.warning("Session with %s timedout.", ip)
+                # Designated heartbeat port.
+                send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
+                logging.info("Sent a pulse to %s.")
+            else:
+                pass
+        else:
+            pass
+        
+
+start_a_thread(thread_name="a_very_good_listener", thread_function=sniff(filter=bp_filter, prn=analyze_pkt), thread_num=1)
+# sniff(filter=BP_filter, prn=lambda x: x.show())
+start_a_thread(thread_name="are_you_good_bruh", thread_function=heartbeat, thread_num=2)
+
+joining_threads()
