@@ -5,11 +5,13 @@ from struct import pack
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff
 
-a_filter = "port 11414 && len >= 64" # Captures TCP-PSH packets.
+a_filter = "port 11414" # Captures TCP-PSH packets.
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
+ip_list_dict = {}
 
 def prnt_pckt(packet):
+    global ip_list_dict
     # ETHERNET WRAP
     # IP WRAP
     dst_ip = packet[IP].src
@@ -25,20 +27,31 @@ def prnt_pckt(packet):
     except:
         tcp_data = "empty packet"
     
-    print('''
-    -- Ether INFO --
-    --IP INFO--
-    dst ip : {}
-    src ip : {}
-    ip ver : {}
-    pkt size : {}
-    --TCP INFO--
-    tcp flag: {}
-    src port : {}
-    dest port : {}
-    data : {}
-    '''.format(dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
 
-
+    if tcp_flag == "S":
+        if src_ip in ip_list_dict :
+            pass
+        else:
+            ip_list_dict[src_ip] = "open"
+            print(ip_list_dict)
+    elif tcp_flag == "A" and pkt_size >= 60:
+        print('''
+        -- Ether INFO --
+        --IP INFO--
+        dst ip : {}
+        src ip : {}
+        ip ver : {}
+        pkt size : {}
+        --TCP INFO--
+        tcp flag: {}
+        src port : {}
+        dest port : {}
+        data : {}
+        '''.format(dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+    elif tcp_flag == "R":
+        ip_list_dict[src_ip] = "closed"
+    else:
+        pass
+    
 sniff(filter=a_filter, prn=prnt_pckt)
 # sniff(filter=a_filter, prn=lambda x: x.show())
