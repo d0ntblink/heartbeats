@@ -22,7 +22,7 @@ def send_hello():
     send(ip_packet/ack_packet)
 
     payload_packet = TCP(sport=sport, dport=dport, flags='A', seq=next_seq, ack=my_ack)
-    payload = "hello"
+    payload = "I am once again sending a packet to say hello"
 
     reply, error = sr(ip_packet/payload_packet/payload, multi=1, timeout=1)
     # for r in reply:

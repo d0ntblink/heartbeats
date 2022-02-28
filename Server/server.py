@@ -36,7 +36,7 @@ def prnt_pckt(packet):
     src port : {}
     dest port : {}
     data : {}
-    '''.format(dst_ip, src_ip, pkt_size, ip_ver, ip_proto, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+    '''.format(dst_ip, src_ip, ip_ver, ip_proto, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
 
 
 sniff(filter=a_filter, prn=prnt_pckt)
