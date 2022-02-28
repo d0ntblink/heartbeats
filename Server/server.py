@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from curses.ascii import ETB
 from struct import pack
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff
@@ -10,7 +11,6 @@ a_filter = "port 11414 && len >= 64" # Captures TCP-PSH packets.
 
 def prnt_pckt(packet):
     # ETHERNET WRAP
-    ip_proto = packet[Ethernet].type
     # IP WRAP
     dst_ip = packet[IP].src
     src_ip = packet[IP].dst
@@ -27,7 +27,6 @@ def prnt_pckt(packet):
     
     print('''
     -- Ether INFO --
-    ip proto : {}
     --IP INFO--
     dst ip : {}
     src ip : {}
@@ -38,7 +37,7 @@ def prnt_pckt(packet):
     src port : {}
     dest port : {}
     data : {}
-    '''.format(ip_proto, dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+    '''.format(dst_ip, src_ip, ip_ver, pkt_size, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
 
 
 sniff(filter=a_filter, prn=prnt_pckt)
