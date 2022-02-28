@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
+from struct import pack
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff
 
-a_filter = "port 11414 && (tcp[13] & 8!=0)" # Captures TCP-PSH packets.
+a_filter = "port 11414 && greater 60" # Captures TCP-PSH packets.
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
 
@@ -13,6 +14,7 @@ def prnt_pckt(packet):
     src_ip = packet[IP].dst
     ip_ver = packet[IP].version
     ip_proto = packet[IP].proto
+    pkt_size = packet[IP].len
     # TCP WRAP
     tcp_src_p = packet[TCP].sport
     tcp_dst_p = packet[TCP].dport
@@ -23,15 +25,18 @@ def prnt_pckt(packet):
         tcp_data = "empty packet"
     
     print('''
+    --IP INFO--
     dst ip : {}
     src ip : {}
     ip ver : {}
     ip proto : {}
+    pkt size : {}
+    --TCP INFO--
     tcp flag: {}
     src port : {}
     dest port : {}
     data : {}
-    '''.format(dst_ip, src_ip, ip_ver, ip_proto, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
+    '''.format(dst_ip, src_ip, pkt_size, ip_ver, ip_proto, tcp_flag, tcp_src_p, tcp_dst_p, tcp_data))
 
 
 sniff(filter=a_filter, prn=prnt_pckt)

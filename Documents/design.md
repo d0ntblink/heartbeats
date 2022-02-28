@@ -14,3 +14,9 @@ client will use scapy to create TCP packets.
 
 Server Side:
 before client.py is ran, server.py should be already running and listening on a designated port. server.py accepts the 3 way TCP handshake and keeps the session open. whenever the server gets a PSH packets and prints the information about it. if the packets has TERMINATE in it, the session will close. if the server hasnt recieved anything in the past 60 seconds, it will send a HEARTBEAT packet on a diffrent thread and listens for a answer to make sure the client is still alive.
+
+i will use berkly's packet filtering scheme to filter the proper flag to print
+https://www.ibm.com/docs/en/qsip/7.3.2?topic=queries-berkeley-packet-filters
+
+
+
