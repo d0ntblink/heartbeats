@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-
+### LIBERARIES
 import threading, logging, time
 from scapy.layers.inet import TCP, IP, Ether
 from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr
 
-
+### CONSTANTS
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
-bp_filter = "port 11414 && (dst host {localip})".format(local_ip=local_ip)
+bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
 # devs = pcapy.findalldevs() # available devices
 # print(devs)
 ip_list_dict = {}
@@ -16,6 +16,7 @@ ip_timeout_dict = {}
 thread_list = []
 
 
+#FUNCTIONS
 def start_a_thread(thread_name, thread_function,thread_num):
     global thread_list
     thread_name = threading.Thread(target=thread_function, args=(thread_num,))
@@ -58,6 +59,7 @@ def analyze_pkt(packet):
     elif tcp_flag == "A" and pkt_size >= 45:
         ip_timeout_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
+            ip_timeout_dict[src_ip] = int(0)
             ip_list_dict[src_ip] = "closed"
             print("session with {ip} has been closed".format(ip=src_ip))
         else:

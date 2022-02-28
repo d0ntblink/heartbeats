@@ -1,20 +1,21 @@
 #!/usr/bin/python3
-
+### LIBERARIESgt
 import threading, logging
 from random import randint
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr
 
-
+### CONSTANTS
 seq = 1
 local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
 dport = 11414
-heartbeat_filter = "port 11415 && dst host {localip}".format(local_ip=local_ip)
+heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
+print(heartbeat_filter)
 thread_list = []
 
-
+### FUNCTIONS
 def start_a_thread(thread_name, thread_function,thread_num):
     global thread_list
     thread_name = threading.Thread(target=thread_function, args=(thread_num,))
@@ -95,7 +96,7 @@ def user_interface():
                 continue
 
 
-
+### START -->
 start_a_thread(thread_name="hearbeat", thread_function=sniff(filter=heartbeat_filter, prn=looking_for_pulese), thread_num=2)
 start_a_thread(thread_name="interface", thread_function=user_interface(), thread_num=1)
 joining_threads()
