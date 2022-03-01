@@ -41,7 +41,7 @@ def send_msg(msg):
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
     packet = ip_packet/syn_packet
-    logging.debug(packet.summary())
+    logging.debug(packet.show())
     synack_response = sr1(packet)
     seq += 1
     # sending the ACK back
