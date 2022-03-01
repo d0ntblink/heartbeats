@@ -35,6 +35,9 @@ Heartbeats sessions are not real TCP sessions, this is done to avoid the need to
 You can Access the most up-to-date version on: https://github.com/d0ntblink/heartbeats
 \n\n
 ''')
+#### VARIABLES
+timeout_limit = input("How long should the server wait before sending a PULSE?(in seconds) ")
+logging.debug("timeout limit is {}.".format(timeout_limit))
 
 #FUNCTIONS
 def start_a_thread(thread_name, thread_function):
@@ -130,18 +133,18 @@ def send_msg(msg, dst_ip, sport, dport):
 
 def heartbeat():
     logging.debug("heartbeat is starting ...")
-    global ip_list_dict, ip_timeout_dict
+    global ip_list_dict, ip_timeout_dict, timeout_limit
     while True:
         sleep(1)
         for ip, sesh_stat in ip_list_dict.items():
             if sesh_stat == "open":
                 ip_timeout_dict[ip] += 1
                 logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
-                if ip_timeout_dict[ip] >= 10:
-                    logging.warning("Session with %s timedout.", ip)
+                if ip_timeout_dict[ip] >= timeout_limit:
+                    logging.warning("Session with {} timedout.".format(ip))
                     # Designated heartbeat port.
                     send_msg(msg="PULSE", dst_ip=ip, sport=randint(1024,65353), dport=11415)
-                    logging.info("Sent a pulse to %s.")
+                    logging.info("Sent a pulse to {}.".format(ip))
                 else:
                     pass
             else:
