@@ -58,14 +58,14 @@ def analyze_pkt(packet):
     # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
         logging.debug(packet.summary())
-        ip_list_dict[src_ip] = "open"
-        logging.debug("heartbeat session with {ip} has been opened".format(ip=src_ip))
+        ip_list_dict[dst_ip] = "open"
+        logging.debug("heartbeat session with {ip} has been opened".format(ip=dst_ip))
     elif tcp_flag == "A" and pkt_size > 40:
-        ip_timeout_dict[src_ip] = int(0)
+        ip_timeout_dict[dst_ip] = int(0)
         if tcp_data == b'TERMINATE':
-            ip_timeout_dict[src_ip] = int(0)
-            ip_list_dict[src_ip] = "closed"
-            logging.debug("heartbeat session with {ip} has been closed".format(ip=src_ip))
+            ip_timeout_dict[dst_ip] = int(0)
+            ip_list_dict[dst_ip] = "closed"
+            logging.debug("heartbeat session with {ip} has been closed".format(ip=dst_ip))
         else:
             print('''
 -- Ether INFO --

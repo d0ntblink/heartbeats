@@ -41,17 +41,20 @@ def send_msg(msg):
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
     packet = ip_packet/syn_packet
+    logging.debug(packet.summary())
     synack_response = sr1(packet)
     seq += 1
     # sending the ACK back
     my_ack = synack_response.seq + 1
     ack_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
+    logging.debug(ack_packet.summary())
     send(ip_packet/ack_packet)
     seq += 1
     # sending the ACK with message
     payload_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
     payload = msg
     reply, error = sr(ip_packet/payload_packet/payload, multi=1, timeout=1)
+    logging.debug('%s %s' % (error, reply))
     seq += 1
 
 
