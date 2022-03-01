@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 ### LIBERARIES
-import threading, logging
+import threading, logging, sys
 from time import sleep
 from random import randint
 from scapy.layers.inet import TCP, IP
@@ -124,7 +124,7 @@ E) Exit the program ->
             logging.debug("sent a terminate command")
             user_interface()
         elif usr_input == "e" :
-            quit()
+            sys.exit()
         else :
             logging.warning("Unknown Input, Please try again!")
             continue
