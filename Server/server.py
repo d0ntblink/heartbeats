@@ -56,27 +56,27 @@ def analyze_pkt(packet):
         if src_ip != local_ip and (src_ip not in ip_list_dict):
             ip_list_dict[src_ip] = "open"
             ip_timeout_dict[src_ip] = int(0)
-            print("session with {ip} has been opened".format(ip=src_ip))
+            logging.info("session with {ip} has been opened".format(ip=src_ip))
     elif tcp_flag == "A" and pkt_size >= 45:
         ip_timeout_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_timeout_dict[src_ip] = int(0)
             ip_list_dict[src_ip] = "closed"
-            print("session with {ip} has been closed".format(ip=src_ip))
+            logging.info("session with {ip} has been closed".format(ip=src_ip))
         else:
             print('''
-            -- Ether INFO --
-            ip proto : {ipp}
-            --IP INFO--
-            dst ip : {dsi}
-            src ip : {sri}
-            ip ver : {ipv}
-            pkt size : {pks}
-            --TCP INFO--
-            tcp flag: {tcf}
-            src port : {srp}
-            dest port : {dsp}
-            data : {dat}
+-- Ether INFO --
+ip proto : {ipp}
+--IP INFO--
+dst ip : {dsi}
+src ip : {sri}
+ip ver : {ipv}
+pkt size : {pks}
+--TCP INFO--
+tcp flag: {tcf}
+src port : {srp}
+dest port : {dsp}
+data : {dat}
             '''.format(ipp=ip_proto, dsi=dst_ip, sri=src_ip, ipv=ip_ver, pks=pkt_size, tcf=tcp_flag, srp=tcp_src_p, dsp=tcp_dst_p, dat=tcp_data))
     else:
         pass
@@ -112,7 +112,7 @@ def heartbeat():
         if sesh_sat == "open":
             sleep(1)
             ip_timeout_dict[ip] += 1
-            logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
+            print('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
             if ip_timeout_dict >= 60:
                 logging.warning("Session with %s timedout.", ip)
                 # Designated heartbeat port.
