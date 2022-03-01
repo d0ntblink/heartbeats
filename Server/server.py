@@ -8,7 +8,7 @@ from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
@@ -18,6 +18,23 @@ ip_timeout_dict = {}
 thread_list = []
 seq = 1
 logging.info('local ip : {}'.format(local_ip))
+print('''
+ ___  ___  _______   ________  ________  _________  ________  _______   ________  _________  ________      
+|\  \|\  \|\  ___ \ |\   __  \|\   __  \|\___   ___\\\\   __  \|\  ___ \ |\   __  \|\___   ___\\\\   ____\     
+\ \  \\\\\  \ \   __/|\ \  \|\  \ \  \|\  \|___ \  \_\ \  \|\ /\ \   __/|\ \  \|\  \|___ \  \_\ \  \___|_    
+ \ \   __  \ \  \_|/_\ \   __  \ \   _  _\   \ \  \ \ \   __  \ \  \_|/_\ \   __  \   \ \  \ \ \_____  \   
+  \ \  \ \  \ \  \_|\ \ \  \ \  \ \  \\\\  \|   \ \  \ \ \  \|\  \ \  \_|\ \ \  \ \  \   \ \  \ \|____|\  \  
+   \ \__\ \__\ \_______\ \__\ \__\ \__\\\\ _\    \ \__\ \ \_______\ \_______\ \__\ \__\   \ \__\  ____\_\  \ 
+    \|__|\|__|\|_______|\|__|\|__|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|    \|__| |\_________\\
+                                                                                               \|_________|
+
+Welcome to the Heatbeats Server!
+Please make sure your heartbeats server is reachable by your clients.
+Heartbeats server is only made of one way client to server communication.
+Heartbeats sessions are not real TCP sessions, this is done to avoid the need to configure your firewall.
+You can Access the most up-to-date version on: https://github.com/d0ntblink/heartbeats
+\n\n
+''')
 
 #FUNCTIONS
 def start_a_thread(thread_name, thread_function):

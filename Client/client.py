@@ -8,7 +8,7 @@ from scapy.sendrecv import sniff, send, sr, sr1
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
 seq = 1
 local_ip = get_if_addr(conf.iface)
@@ -18,6 +18,21 @@ heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
 logging.debug(heartbeat_filter)
 thread_list = []
 logging.info('local ip : {}'.format(local_ip))
+### WELCOME MESSAGE
+print('''
+ ___  ___  _______   ________  ________  _________  ________  _______   ________  _________  ________      
+|\  \|\  \|\  ___ \ |\   __  \|\   __  \|\___   ___\\\\   __  \|\  ___ \ |\   __  \|\___   ___\\\\   ____\     
+\ \  \\\\\  \ \   __/|\ \  \|\  \ \  \|\  \|___ \  \_\ \  \|\ /\ \   __/|\ \  \|\  \|___ \  \_\ \  \___|_    
+ \ \   __  \ \  \_|/_\ \   __  \ \   _  _\   \ \  \ \ \   __  \ \  \_|/_\ \   __  \   \ \  \ \ \_____  \   
+  \ \  \ \  \ \  \_|\ \ \  \ \  \ \  \\\\  \|   \ \  \ \ \  \|\  \ \  \_|\ \ \  \ \  \   \ \  \ \|____|\  \  
+   \ \__\ \__\ \_______\ \__\ \__\ \__\\\\ _\    \ \__\ \ \_______\ \_______\ \__\ \__\   \ \__\  ____\_\  \ 
+    \|__|\|__|\|_______|\|__|\|__|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|    \|__| |\_________\\
+                                                                                               \|_________|
+
+Welcome to the Heatbeats Client!
+Before sending messages, make sure the heartbeats server is already running and reachable.
+\n\n\
+''')
 
 ### FUNCTIONS
 def start_a_thread(thread_name, thread_function):
