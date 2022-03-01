@@ -9,7 +9,7 @@ from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
 logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s : %(threadName)s -- %(message)s\n')
+                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
 seq = 1
 local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
