@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 ### LIBERARIES
-import threading, logging, time
+import threading, logging
+from time import sleep
 from scapy.layers.inet import TCP, IP, Ether
 from scapy.sendrecv import sniff, sr1, send, sr
-from scapy.arch import get_if_addr
+from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
 local_ip = get_if_addr(conf.iface)
@@ -109,7 +110,7 @@ def heartbeat():
     global ip_list_dict, ip_timeout_dict
     for ip, sesh_sat in ip_list_dict:
         if sesh_sat == "open":
-            time.sleep(1)
+            sleep(1)
             ip_timeout_dict[ip] += 1
             logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
             if ip_timeout_dict >= 60:

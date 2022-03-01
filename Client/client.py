@@ -5,7 +5,7 @@ from time import sleep
 from random import randint
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff, sr1, send, sr
-from scapy.arch import get_if_addr
+from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
 seq = 1
