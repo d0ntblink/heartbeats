@@ -49,7 +49,7 @@ def analyze_pkt(packet):
     try:
         tcp_data = packet[TCP].load
     except:
-        tcp_data = "empty packet"
+        tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
         if src_ip != local_ip and (src_ip not in ip_list_dict):
@@ -125,6 +125,6 @@ def heartbeat():
 
 start_a_thread(thread_name="a_very_good_listener", thread_function=sniff(filter=bp_filter, prn=analyze_pkt), thread_num=1)
 # sniff(filter=BP_filter, prn=lambda x: x.show())
-start_a_thread(thread_name="are_you_good_bruh", thread_function=heartbeat, thread_num=2)
+start_a_thread(thread_name="a_caring_friend", thread_function=heartbeat, thread_num=2)
 
 joining_threads()

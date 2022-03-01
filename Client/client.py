@@ -1,6 +1,7 @@
 #!/usr/bin/python3
-### LIBERARIESgt
+### LIBERARIES
 import threading, logging
+from time import sleep
 from random import randint
 from scapy.layers.inet import TCP, IP
 from scapy.sendrecv import sniff, sr1, send, sr
@@ -12,13 +13,13 @@ local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
 dport = 11414
 heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
-print(heartbeat_filter)
+# print(heartbeat_filter)
 thread_list = []
 
 ### FUNCTIONS
-def start_a_thread(thread_name, thread_function,thread_num):
+def start_a_thread(thread_name, thread_function):
     global thread_list
-    thread_name = threading.Thread(target=thread_function, args=(thread_num,))
+    thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
     # logging.info("starting thread %d.", thread_num)
     thread_name.start()
@@ -54,7 +55,7 @@ def send_msg(msg):
     # r[1].show2()
 
 
-def looking_for_pulese(packet):
+def looking_for_pulse(packet):
     # IP WRAP
     src_ip = packet[IP].dst
     pkt_size = packet[IP].len
@@ -63,40 +64,50 @@ def looking_for_pulese(packet):
     try:
         tcp_data = packet[TCP].load
     except:
-        tcp_data = "00"
+        tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if ( tcp_flag == "A" ) and ( pkt_size >= 45 ) and ( tcp_data == "PULSE"):
         logging.info("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
+        send_msg(msg="STILL D.R.E")
     else:
         pass
 
 
 def user_interface():
-        ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
-        while True:
-            usr_input = input('''
-                              What would like to do:
-                                S) Send a custom message
-                                Q) Terminate session and change server IP
-                                E) Exit the program
-                                \n\n
-                              ''').lower()
-            # print(usr_input)
-            if usr_input == "s" :
-                send_msg(msg=input("What is your message : "))
-                logging.info("Message Sent!")
-                continue
-            elif usr_input == "q" :
-                send_msg(msg="TERMINATE")
-                user_interface()
-            elif usr_input == "e" :
-                exit()
-            else :
-                print("Wrong Input, Please Try Again!\n\n")
-                continue
+    global ip_packet
+    ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
+    while True:
+        usr_input = input('''
+                            What would like to do:
+                            S) Send a customized message ->
+                            Q) Terminate session and change server IP ->
+                            E) Exit the program ->
+                            \n\n
+                            ''').lower()
+        sleep(1)
+        # print(usr_input)
+        if usr_input == "s" :
+            send_msg(msg=input("What is your message : "))
+            logging.info("Message Sent!")
+            continue
+        elif usr_input == "q" :
+            send_msg(msg="TERMINATE")
+            user_interface()
+        elif usr_input == "e" :
+            break
+        else :
+            print("Wrong Input, Please Try Again!\n\n")
+            continue
+
+
+def listening_for_pulse():
+    global heartbeat_filter
+    while True:
+        sniff(filter=heartbeat_filter, prn=looking_for_pulse)
+        sleep(0.1)
 
 
 ### START -->
-start_a_thread(thread_name="hearbeat", thread_function=sniff(filter=heartbeat_filter, prn=looking_for_pulese), thread_num=2)
-start_a_thread(thread_name="interface", thread_function=user_interface(), thread_num=1)
+start_a_thread(thread_name="user_interface", thread_function=user_interface)
+start_a_thread(thread_name="i_need_a_doctor", thread_function=listening_for_pulse)
 joining_threads()
