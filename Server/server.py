@@ -36,7 +36,12 @@ You can Access the most up-to-date version on: https://github.com/d0ntblink/hear
 \n\n
 ''')
 #### VARIABLES
-timeout_limit = input("How long should the server wait before sending a PULSE?(in seconds) ")
+while True:
+    try:
+        timeout_limit = int(input("How long should the server wait before sending a PULSE?(in seconds) "))
+        break
+    except:
+        logging.warning("Something went wrong, try again.")
 logging.debug("timeout limit is {}.".format(timeout_limit))
 
 #FUNCTIONS

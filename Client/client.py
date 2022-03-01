@@ -103,7 +103,7 @@ def user_interface():
     try:
         ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
     except:
-        logging.debug("something when wrong, try again")
+        logging.warning("Something went wrong, try again!")
         user_interface()
     while True:
         usr_input = input('''
@@ -126,7 +126,7 @@ E) Exit the program ->
         elif usr_input == "e" :
             exit()
         else :
-            logging.warning("Unknown Input, Please Try Again!")
+            logging.warning("Unknown Input, Please try again!")
             continue
 
 
