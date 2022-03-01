@@ -99,7 +99,7 @@ E) Exit the program ->
             logging.debug("sent a terminate command")
             user_interface()
         elif usr_input == "e" :
-            break
+            exit()
         else :
             print("Wrong Input, Please Try Again!\n\n")
             continue
