@@ -24,7 +24,7 @@ def start_a_thread(thread_name, thread_function):
     global thread_list
     thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
-    logging.debug("starting thread %d.", thread_name)
+    logging.debug("starting thread %s.", thread_name)
     thread_name.start()
 
 
