@@ -121,7 +121,7 @@ def heartbeat():
             if sesh_stat == "open":
                 ip_timeout_dict[ip] += 1
                 logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
-                if ip_timeout_dict >= 60:
+                if ip_timeout_dict[ip] >= 60:
                     logging.warning("Session with %s timedout.", ip)
                     # Designated heartbeat port.
                     send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
