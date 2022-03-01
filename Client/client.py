@@ -124,7 +124,7 @@ E) Exit the program ->
             logging.debug("sent a terminate command")
             user_interface()
         elif usr_input == "e" :
-            exit()
+            quit()
         else :
             logging.warning("Unknown Input, Please try again!")
             continue
