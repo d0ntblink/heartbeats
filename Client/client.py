@@ -4,7 +4,7 @@ import threading, logging
 from time import sleep
 from random import randint
 from scapy.layers.inet import TCP, IP
-from scapy.sendrecv import sniff, sr1, send, sr
+from scapy.sendrecv import sniff, send, sr, sr1
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
@@ -14,7 +14,7 @@ seq = 1
 local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
 dport = 11414
-heartbeat_filter = "port 11415"
+heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
 # print(heartbeat_filter)
 thread_list = []
 logging.debug('local ip : {}'.format(local_ip))
@@ -69,11 +69,12 @@ def looking_for_pulse(packet):
     except:
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
-    if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
-        logging.debug("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
-        send_msg(msg="STILL D.R.E")
-    else:
-        pass
+    logging.debug(packet.summary())
+    # if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
+    #     logging.debug("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
+    #     send_msg(msg="STILL D.R.E")
+    # else:
+    #     pass
 
 
 def user_interface():
@@ -90,7 +91,7 @@ S) Send a customized message ->
 Q) Terminate session and change server IP ->
 E) Exit the program ->
 \n\n
-                            ''').lower()
+''').lower()
         sleep(1)
         # print(usr_input)
         if usr_input == "s" :

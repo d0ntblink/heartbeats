@@ -18,8 +18,8 @@ bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
 ip_list_dict = {}
 ip_timeout_dict = {}
 thread_list = []
+seq = 1
 logging.debug('local ip : {}'.format(local_ip))
-
 
 #FUNCTIONS
 def start_a_thread(thread_name, thread_function):
@@ -88,12 +88,12 @@ data : {dat}
 
 
 def send_msg(msg, dst_ip, sport, dport):
-    seq = 1000
+    global seq
     ip_packet = IP(dst=(str(dst_ip)))
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
     packet = ip_packet/syn_packet
-    logging.debug(packet.summary())
+    logging.debug(packet.show())
     synack_response = sr1(packet)
     seq += 1
     # sending the ACK back
@@ -124,7 +124,7 @@ def heartbeat():
                 if ip_timeout_dict[ip] >= 10:
                     logging.warning("Session with %s timedout.", ip)
                     # Designated heartbeat port.
-                    send_msg(msg="PULSE", dst_ip=ip, sport=randint(1024,65353), dport=11415)
+                    send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
                     logging.debug("Sent a pulse to %s.")
                 else:
                     pass
