@@ -114,10 +114,10 @@ def heartbeat():
     global ip_list_dict, ip_timeout_dict
     while True:
         logging.info('{}\n{}'.format(ip_list_dict, ip_timeout_dict))
+        sleep(1)
         for ip, sesh_sat in ip_list_dict:
             logging.info('{} : {}'.format(ip, sesh_sat))
             if sesh_sat == "open":
-                sleep(1)
                 ip_timeout_dict[ip] += 1
                 logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
                 if ip_timeout_dict >= 60:
