@@ -8,6 +8,8 @@ from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s : %(thread)d -- %(message)s')
 seq = 1
 local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
@@ -66,7 +68,7 @@ def looking_for_pulse(packet):
     except:
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
-    if ( tcp_flag == "A" ) and ( pkt_size >= 45 ) and ( tcp_data == "PULSE"):
+    if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
         logging.info("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
         send_msg(msg="STILL D.R.E")
     else:
@@ -75,14 +77,18 @@ def looking_for_pulse(packet):
 
 def user_interface():
     global ip_packet
-    ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
+    try:
+        ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
+    except:
+        logging.info("something when wrong, try again")
+        user_interface()
     while True:
         usr_input = input('''
-                            What would like to do:
-                            S) Send a customized message ->
-                            Q) Terminate session and change server IP ->
-                            E) Exit the program ->
-                            \n\n
+What would like to do:
+S) Send a customized message ->
+Q) Terminate session and change server IP ->
+E) Exit the program ->
+\n\n
                             ''').lower()
         sleep(1)
         # print(usr_input)
@@ -92,6 +98,7 @@ def user_interface():
             continue
         elif usr_input == "q" :
             send_msg(msg="TERMINATE")
+            logging.info("sent a terminate command")
             user_interface()
         elif usr_input == "e" :
             break
