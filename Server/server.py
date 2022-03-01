@@ -7,6 +7,8 @@ from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s : %(thread)d -- %(message)s')
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
 bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
@@ -57,7 +59,7 @@ def analyze_pkt(packet):
             ip_list_dict[src_ip] = "open"
             ip_timeout_dict[src_ip] = int(0)
             logging.info("session with {ip} has been opened".format(ip=src_ip))
-    elif tcp_flag == "A" and pkt_size >= 45:
+    elif tcp_flag == "A" and pkt_size > 40:
         ip_timeout_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_timeout_dict[src_ip] = int(0)
@@ -77,6 +79,7 @@ tcp flag: {tcf}
 src port : {srp}
 dest port : {dsp}
 data : {dat}
+\n\n
             '''.format(ipp=ip_proto, dsi=dst_ip, sri=src_ip, ipv=ip_ver, pks=pkt_size, tcf=tcp_flag, srp=tcp_src_p, dsp=tcp_dst_p, dat=tcp_data))
     else:
         pass
@@ -107,12 +110,13 @@ def send_msg(msg, dst_ip, sport, dport):
 
 
 def heartbeat():
+    logging.info("heartbeat is starting")
     global ip_list_dict, ip_timeout_dict
     for ip, sesh_sat in ip_list_dict:
         if sesh_sat == "open":
             sleep(1)
             ip_timeout_dict[ip] += 1
-            print('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
+            logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
             if ip_timeout_dict >= 60:
                 logging.warning("Session with %s timedout.", ip)
                 # Designated heartbeat port.
@@ -125,6 +129,7 @@ def heartbeat():
 
 
 def listening_for_pkts():
+    logging.info("sniffing starting")
     sniff(filter=bp_filter, prn=analyze_pkt)
         
 
