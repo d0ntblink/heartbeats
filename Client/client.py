@@ -70,11 +70,11 @@ def looking_for_pulse(packet):
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     logging.debug(packet.summary())
-    # if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
-    #     logging.debug("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
-    #     send_msg(msg="STILL D.R.E")
-    # else:
-    #     pass
+    if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
+        logging.debug("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
+        send_msg(msg="STILL D.R.E")
+    else:
+        pass
 
 
 def user_interface():
