@@ -14,7 +14,7 @@ seq = 1
 local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
 dport = 11414
-heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
+heartbeat_filter = "port 11415"
 # print(heartbeat_filter)
 thread_list = []
 logging.debug('local ip : {}'.format(local_ip))
