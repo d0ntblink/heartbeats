@@ -17,9 +17,9 @@ thread_list = []
 
 
 #FUNCTIONS
-def start_a_thread(thread_name, thread_function,thread_num):
+def start_a_thread(thread_name, thread_function):
     global thread_list
-    thread_name = threading.Thread(target=thread_function, args=(thread_num,))
+    thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
     # logging.info("starting thread %d.", thread_num)
     thread_name.start()
@@ -121,10 +121,13 @@ def heartbeat():
                 pass
         else:
             pass
+
+
+def listening_for_pkts():
+    sniff(filter=bp_filter, prn=analyze_pkt)
         
 
-start_a_thread(thread_name="a_very_good_listener", thread_function=sniff(filter=bp_filter, prn=analyze_pkt), thread_num=1)
+start_a_thread(thread_name="a_very_good_listener", thread_function=listening_for_pkts)
 # sniff(filter=BP_filter, prn=lambda x: x.show())
-start_a_thread(thread_name="a_caring_friend", thread_function=heartbeat, thread_num=2)
-
-joining_threads()
+start_a_thread(thread_name="a_caring_friend", thread_function=heartbeat)
+# joining_threads()

@@ -102,12 +102,10 @@ def user_interface():
 
 def listening_for_pulse():
     global heartbeat_filter
-    while True:
-        sniff(filter=heartbeat_filter, prn=looking_for_pulse)
-        sleep(0.1)
+    sniff(filter=heartbeat_filter, prn=looking_for_pulse)
 
 
 ### START -->
 start_a_thread(thread_name="user_interface", thread_function=user_interface)
 start_a_thread(thread_name="i_need_a_doctor", thread_function=listening_for_pulse)
-joining_threads()
+# joining_threads()
