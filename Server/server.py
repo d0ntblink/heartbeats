@@ -112,20 +112,21 @@ def send_msg(msg, dst_ip, sport, dport):
 def heartbeat():
     logging.info("heartbeat is starting")
     global ip_list_dict, ip_timeout_dict
-    for ip, sesh_sat in ip_list_dict:
-        if sesh_sat == "open":
-            sleep(1)
-            ip_timeout_dict[ip] += 1
-            logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
-            if ip_timeout_dict >= 60:
-                logging.warning("Session with %s timedout.", ip)
-                # Designated heartbeat port.
-                send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
-                logging.info("Sent a pulse to %s.")
+    while True:
+        for ip, sesh_sat in ip_list_dict:
+            if sesh_sat == "open":
+                sleep(1)
+                ip_timeout_dict[ip] += 1
+                logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
+                if ip_timeout_dict >= 60:
+                    logging.warning("Session with %s timedout.", ip)
+                    # Designated heartbeat port.
+                    send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
+                    logging.info("Sent a pulse to %s.")
+                else:
+                    pass
             else:
                 pass
-        else:
-            pass
 
 
 def listening_for_pkts():
