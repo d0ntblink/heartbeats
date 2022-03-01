@@ -13,8 +13,6 @@ logging.basicConfig(level=logging.DEBUG,
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
 bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
-# devs = pcapy.findalldevs() # available devices
-# print(devs)
 ip_list_dict = {}
 ip_timeout_dict = {}
 thread_list = []
@@ -86,7 +84,6 @@ data : {dat}
         pass
 
 
-
 def send_msg(msg, dst_ip, sport, dport):
     global seq
     ip_packet = IP(dst=(str(dst_ip)))
@@ -135,7 +132,7 @@ def heartbeat():
 def listening_for_pkts():
     logging.debug("sniffing starting")
     sniff(filter=bp_filter, prn=analyze_pkt)
-        
+
 
 start_a_thread(thread_name="a_very_good_listener", thread_function=listening_for_pkts)
 start_a_thread(thread_name="a_caring_friend", thread_function=heartbeat)

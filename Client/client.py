@@ -15,7 +15,7 @@ local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
 dport = 11414
 heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
-# print(heartbeat_filter)
+logging.debug(heartbeat_filter)
 thread_list = []
 logging.debug('local ip : {}'.format(local_ip))
 
@@ -90,10 +90,10 @@ What would like to do:
 S) Send a customized message ->
 Q) Terminate session and change server IP ->
 E) Exit the program ->
-\n\n
+\n
 ''').lower()
         sleep(1)
-        # print(usr_input)
+        logging.debug(usr_input)
         if usr_input == "s" :
             send_msg(msg=input("What is your message : "))
             logging.debug("Message Sent!")
@@ -105,7 +105,7 @@ E) Exit the program ->
         elif usr_input == "e" :
             exit()
         else :
-            print("Wrong Input, Please Try Again!\n\n")
+            logging.warning("Wrong Input, Please Try Again!")
             continue
 
 
