@@ -115,9 +115,10 @@ def heartbeat():
     while True:
         logging.debug('{}\n{}'.format(ip_list_dict, ip_timeout_dict))
         sleep(1)
-        for ip, sesh_sat in ip_list_dict:
-            logging.debug('{} : {}'.format(ip, sesh_sat))
-            if sesh_sat == "open":
+        for ip in ip_list_dict:
+            sesh_stat = ip_list_dict[ip]
+            logging.debug('{} : {}'.format(ip, sesh_stat))
+            if sesh_stat == "open":
                 ip_timeout_dict[ip] += 1
                 logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
                 if ip_timeout_dict >= 60:
