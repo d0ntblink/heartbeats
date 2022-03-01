@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 ### LIBERARIES
 import threading, logging
+from random import randint
 from time import sleep
 from scapy.layers.inet import TCP, IP, Ether
 from scapy.sendrecv import sniff, sr1, send, sr
@@ -87,8 +88,8 @@ data : {dat}
 
 
 def send_msg(msg, dst_ip, sport, dport):
-    seq = 0
-    ip_packet = IP(dst=dst_ip)
+    seq = 1000
+    ip_packet = IP(dst=(str(dst_ip)))
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
     packet = ip_packet/syn_packet
@@ -113,7 +114,6 @@ def heartbeat():
     logging.debug("heartbeat is starting")
     global ip_list_dict, ip_timeout_dict
     while True:
-        logging.debug('{}\n{}'.format(ip_list_dict, ip_timeout_dict))
         sleep(1)
         for ip in ip_list_dict:
             sesh_stat = ip_list_dict[ip]
@@ -121,10 +121,10 @@ def heartbeat():
             if sesh_stat == "open":
                 ip_timeout_dict[ip] += 1
                 logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
-                if ip_timeout_dict[ip] >= 60:
+                if ip_timeout_dict[ip] >= 10:
                     logging.warning("Session with %s timedout.", ip)
                     # Designated heartbeat port.
-                    send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
+                    send_msg(msg="PULSE", dst_ip=ip, sport=randint(1024,65353), dport=11415)
                     logging.debug("Sent a pulse to %s.")
                 else:
                     pass
