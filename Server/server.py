@@ -67,8 +67,8 @@ def analyze_pkt(packet):
             -- Ether INFO --
             ip proto : {ipp}
             --IP INFO--
-            dst ip : {dsp}
-            src ip : {srp}
+            dst ip : {dsi}
+            src ip : {sri}
             ip ver : {ipv}
             pkt size : {pks}
             --TCP INFO--
@@ -76,7 +76,7 @@ def analyze_pkt(packet):
             src port : {srp}
             dest port : {dsp}
             data : {dat}
-            '''.format(ipp=ip_proto, dsp=dst_ip, srp=src_ip, ipv=ip_ver, pks=pkt_size, tcf=tcp_flag, srp=tcp_src_p, dsp=tcp_dst_p, dat=tcp_data))
+            '''.format(ipp=ip_proto, dsi=dst_ip, sri=src_ip, ipv=ip_ver, pks=pkt_size, tcf=tcp_flag, srp=tcp_src_p, dsp=tcp_dst_p, dat=tcp_data))
     else:
         pass
 
