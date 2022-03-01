@@ -17,26 +17,29 @@ ip_list_dict = {}
 ip_timeout_dict = {}
 thread_list = []
 seq = 1
-logging.debug('local ip : {}'.format(local_ip))
+logging.info('local ip : {}'.format(local_ip))
 
 #FUNCTIONS
 def start_a_thread(thread_name, thread_function):
+    logging.debug("start_a_thread is starting ...")
     global thread_list
     thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
-    logging.debug("starting thread %s.", thread_name)
     thread_name.start()
+    logging.debug("created thread %s.", thread_name)
 
 
 def joining_threads():
+    logging.debug("joinging threads is starting ...")
     global thread_list
     for t_num, thread in enumerate(thread_list):
-        logging.debug("preparing thread %d.", t_num)
+        logging.debug("preparing to join thread %d.", t_num)
         thread.join()
         logging.debug("thread %d joined", t_num)
     
 
 def analyze_pkt(packet):
+    logging.debug("anlyze_pkt is starting ...")
     global ip_list_dict, ip_timeout_dict, local_ip
     # ETHERNET WRAP
     ip_proto = packet[Ether].type
@@ -57,13 +60,13 @@ def analyze_pkt(packet):
     if tcp_flag == "S":
         logging.debug(packet.summary())
         ip_list_dict[dst_ip] = "open"
-        logging.debug("heartbeat session with {ip} has been opened".format(ip=dst_ip))
+        logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
     elif tcp_flag == "A" and pkt_size > 40:
         ip_timeout_dict[dst_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_timeout_dict[dst_ip] = int(0)
             ip_list_dict[dst_ip] = "closed"
-            logging.debug("heartbeat session with {ip} has been closed".format(ip=dst_ip))
+            logging.info("heartbeat session with {ip} has been closed".format(ip=dst_ip))
         else:
             print('''
 -- Ether INFO --
@@ -85,6 +88,7 @@ data : {dat}
 
 
 def send_msg(msg, dst_ip, sport, dport):
+    logging.debug("send_msg is starting ...")
     global seq
     ip_packet = IP(dst=(str(dst_ip)))
     # sending the syn package and receiving SYN_ACK
@@ -96,7 +100,7 @@ def send_msg(msg, dst_ip, sport, dport):
     # sending the ACK back
     my_ack = synack_response.seq + 1
     ack_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
-    logging.debug(ack_packet.summary())
+    logging.debug(ack_packet.show())
     send(ip_packet/ack_packet)
     seq += 1
     # sending the ACK with message
@@ -108,21 +112,19 @@ def send_msg(msg, dst_ip, sport, dport):
 
 
 def heartbeat():
-    logging.debug("heartbeat is starting")
+    logging.debug("heartbeat is starting ...")
     global ip_list_dict, ip_timeout_dict
     while True:
         sleep(1)
-        for ip in ip_list_dict:
-            sesh_stat = ip_list_dict[ip]
-            logging.debug('{} : {}'.format(ip, sesh_stat))
+        for ip, sesh_stat in ip_list_dict.items():
             if sesh_stat == "open":
                 ip_timeout_dict[ip] += 1
                 logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
                 if ip_timeout_dict[ip] >= 10:
                     logging.warning("Session with %s timedout.", ip)
                     # Designated heartbeat port.
-                    send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
-                    logging.debug("Sent a pulse to %s.")
+                    send_msg(msg="PULSE", dst_ip=ip, sport=randint(1024,65353), dport=11415)
+                    logging.info("Sent a pulse to %s.")
                 else:
                     pass
             else:
@@ -130,7 +132,7 @@ def heartbeat():
 
 
 def listening_for_pkts():
-    logging.debug("sniffing starting")
+    logging.debug("listening_for_pkts starting ...")
     sniff(filter=bp_filter, prn=analyze_pkt)
 
 

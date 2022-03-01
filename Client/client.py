@@ -17,18 +17,20 @@ dport = 11414
 heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
 logging.debug(heartbeat_filter)
 thread_list = []
-logging.debug('local ip : {}'.format(local_ip))
+logging.info('local ip : {}'.format(local_ip))
 
 ### FUNCTIONS
 def start_a_thread(thread_name, thread_function):
+    logging.debug("start_a_thread is starting ...")
     global thread_list
     thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
-    logging.debug("starting thread %s.", thread_name)
     thread_name.start()
+    logging.debug("created thread %s.", thread_name)
 
 
 def joining_threads():
+    logging.debug("joining_threads is starting ...")
     global thread_list
     for t_num, thread in enumerate(thread_list):
         logging.debug("preparing thread %d.", t_num)
@@ -37,6 +39,7 @@ def joining_threads():
 
 
 def send_msg(msg):
+    logging.debug("send_msg is starting ...")
     global seq, ip_packet
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
@@ -47,7 +50,7 @@ def send_msg(msg):
     # sending the ACK back
     my_ack = synack_response.seq + 1
     ack_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
-    logging.debug(ack_packet.summary())
+    logging.debug(ack_packet.show())
     send(ip_packet/ack_packet)
     seq += 1
     # sending the ACK with message
@@ -59,6 +62,7 @@ def send_msg(msg):
 
 
 def looking_for_pulse(packet):
+    logging.debug("looking_for_pulse is starting ...")
     # IP WRAP
     src_ip = packet[IP].dst
     pkt_size = packet[IP].len
@@ -69,15 +73,17 @@ def looking_for_pulse(packet):
     except:
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
-    logging.debug(packet.summary())
-    if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
-        logging.debug("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
+    logging.debug(packet.show())
+    if tcp_data == b'PULSE':
+        logging.info("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
         send_msg(msg="STILL D.R.E")
+        logging.info("Responded back to the PULSE from {heartbeat_src}".format(heartbeat_src=src_ip))
     else:
         pass
 
 
 def user_interface():
+    logging.debug("user_interface is starting ...")
     global ip_packet
     try:
         ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
@@ -105,7 +111,7 @@ E) Exit the program ->
         elif usr_input == "e" :
             exit()
         else :
-            logging.warning("Wrong Input, Please Try Again!")
+            logging.warning("Unknown Input, Please Try Again!")
             continue
 
 
