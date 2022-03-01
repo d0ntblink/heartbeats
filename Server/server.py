@@ -113,7 +113,9 @@ def heartbeat():
     logging.info("heartbeat is starting")
     global ip_list_dict, ip_timeout_dict
     while True:
+        logging.info(ip_list_dict, "\n", ip_timeout_dict)
         for ip, sesh_sat in ip_list_dict:
+            logging.info(ip, sesh_sat)
             if sesh_sat == "open":
                 sleep(1)
                 ip_timeout_dict[ip] += 1
