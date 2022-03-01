@@ -8,7 +8,7 @@ from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s : %(threadName)s -- %(message)s\n')
 seq = 1
 local_ip = get_if_addr(conf.iface)
@@ -17,22 +17,23 @@ dport = 11414
 heartbeat_filter = "port 11415 && (dst host {localip})".format(localip=local_ip)
 # print(heartbeat_filter)
 thread_list = []
+logging.debug('local ip : {}'.format(local_ip))
 
 ### FUNCTIONS
 def start_a_thread(thread_name, thread_function):
     global thread_list
     thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
-    # logging.info("starting thread %d.", thread_num)
+    logging.debug("starting thread %d.", thread_name)
     thread_name.start()
 
 
 def joining_threads():
     global thread_list
     for t_num, thread in enumerate(thread_list):
-        # logging.info("preparing thread %d.", t_num)
+        logging.debug("preparing thread %d.", t_num)
         thread.join()
-        # logging.info("thread %d joined", t_num)
+        logging.debug("thread %d joined", t_num)
 
 
 def send_msg(msg):
@@ -52,9 +53,6 @@ def send_msg(msg):
     payload = msg
     reply, error = sr(ip_packet/payload_packet/payload, multi=1, timeout=1)
     seq += 1
-    # for r in reply:
-    #     r[0].show2()
-    # r[1].show2()
 
 
 def looking_for_pulse(packet):
@@ -69,7 +67,7 @@ def looking_for_pulse(packet):
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if ( tcp_flag == "A" ) and ( pkt_size >= 10 ) and ( tcp_data == "PULSE"):
-        logging.info("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
+        logging.debug("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
         send_msg(msg="STILL D.R.E")
     else:
         pass
@@ -80,7 +78,7 @@ def user_interface():
     try:
         ip_packet = IP(dst=(input("Please input the ip address of the server you are trying to connect to: ")))
     except:
-        logging.info("something when wrong, try again")
+        logging.debug("something when wrong, try again")
         user_interface()
     while True:
         usr_input = input('''
@@ -94,11 +92,11 @@ E) Exit the program ->
         # print(usr_input)
         if usr_input == "s" :
             send_msg(msg=input("What is your message : "))
-            logging.info("Message Sent!")
+            logging.debug("Message Sent!")
             continue
         elif usr_input == "q" :
             send_msg(msg="TERMINATE")
-            logging.info("sent a terminate command")
+            logging.debug("sent a terminate command")
             user_interface()
         elif usr_input == "e" :
             break
