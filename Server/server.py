@@ -8,7 +8,7 @@ from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
 logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s : %(thread)d -- %(message)s')
+                    format='%(asctime)s : %(threadName)s -- %(message)s\n')
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
 bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
