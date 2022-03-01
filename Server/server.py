@@ -7,8 +7,8 @@ from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s : %(threadName)s -- %(message)s\n')
+logging.basicConfig(level=logging.DEBUG,
+                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
 bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
@@ -17,6 +17,7 @@ bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
 ip_list_dict = {}
 ip_timeout_dict = {}
 thread_list = []
+logging.debug('local ip : {}'.format(local_ip))
 
 
 #FUNCTIONS
@@ -24,16 +25,16 @@ def start_a_thread(thread_name, thread_function):
     global thread_list
     thread_name = threading.Thread(target=thread_function)
     thread_list.append(thread_name)
-    # logging.info("starting thread %d.", thread_num)
+    logging.debug("starting thread %s.", thread_name)
     thread_name.start()
 
 
 def joining_threads():
     global thread_list
     for t_num, thread in enumerate(thread_list):
-        # logging.info("preparing thread %d.", t_num)
+        logging.debug("preparing thread %d.", t_num)
         thread.join()
-        # logging.info("thread %d joined", t_num)
+        logging.debug("thread %d joined", t_num)
     
 
 def analyze_pkt(packet):
@@ -55,16 +56,15 @@ def analyze_pkt(packet):
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
-        if src_ip != local_ip and (src_ip not in ip_list_dict):
-            ip_list_dict[src_ip] = "open"
-            ip_timeout_dict[src_ip] = int(0)
-            logging.info("session with {ip} has been opened".format(ip=src_ip))
+        logging.debug(packet.summary())
+        ip_list_dict[src_ip] = "open"
+        logging.debug("heartbeat session with {ip} has been opened".format(ip=src_ip))
     elif tcp_flag == "A" and pkt_size > 40:
         ip_timeout_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_timeout_dict[src_ip] = int(0)
             ip_list_dict[src_ip] = "closed"
-            logging.info("session with {ip} has been closed".format(ip=src_ip))
+            logging.debug("heartbeat session with {ip} has been closed".format(ip=src_ip))
         else:
             print('''
 -- Ether INFO --
@@ -110,21 +110,21 @@ def send_msg(msg, dst_ip, sport, dport):
 
 
 def heartbeat():
-    logging.info("heartbeat is starting")
+    logging.debug("heartbeat is starting")
     global ip_list_dict, ip_timeout_dict
     while True:
-        logging.info('{}\n{}'.format(ip_list_dict, ip_timeout_dict))
+        logging.debug('{}\n{}'.format(ip_list_dict, ip_timeout_dict))
         sleep(1)
         for ip, sesh_sat in ip_list_dict:
-            logging.info('{} : {}'.format(ip, sesh_sat))
+            logging.debug('{} : {}'.format(ip, sesh_sat))
             if sesh_sat == "open":
                 ip_timeout_dict[ip] += 1
-                logging.info('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
+                logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
                 if ip_timeout_dict >= 60:
                     logging.warning("Session with %s timedout.", ip)
                     # Designated heartbeat port.
                     send_msg(msg="PULSE", dst_ip=ip, sport=11415, dport=11415)
-                    logging.info("Sent a pulse to %s.")
+                    logging.debug("Sent a pulse to %s.")
                 else:
                     pass
             else:
@@ -132,11 +132,10 @@ def heartbeat():
 
 
 def listening_for_pkts():
-    logging.info("sniffing starting")
+    logging.debug("sniffing starting")
     sniff(filter=bp_filter, prn=analyze_pkt)
         
 
 start_a_thread(thread_name="a_very_good_listener", thread_function=listening_for_pkts)
-# sniff(filter=BP_filter, prn=lambda x: x.show())
 start_a_thread(thread_name="a_caring_friend", thread_function=heartbeat)
 # joining_threads()
