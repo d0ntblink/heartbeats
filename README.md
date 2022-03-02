@@ -35,4 +35,4 @@ Tested
 * [Manual](https://github.com/d0ntblink/heartbeats/blob/master/Documents/user_manual.md)
 
 ## Video
-[![Video showcase with my awesome and professional commentary](http://img.youtube.com/vi/nqTqN2qU_ec.jpg)](http://www.youtube.com/watch?v=nqTqN2qU_ec "heartbeat client server demo")
+[![Video showcase with my awesome and professional commentary](http://img.youtube.com/vi/nqTqN2qU_ec/0.jpg)](http://www.youtube.com/watch?v=nqTqN2qU_ec "heartbeat client server demo")
