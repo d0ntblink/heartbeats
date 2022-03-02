@@ -80,7 +80,7 @@ def looking_for_pulse(packet):
     logging.debug("looking_for_pulse is starting ...")
     logging.debug(packet.summary())
     # IP WRAP
-    src_ip = packet[IP].dst
+    src_ip = packet[IP].src
     # TCP WRAP
     try:
         tcp_data = packet[TCP].load
