@@ -1,4 +1,5 @@
-# Heartbeats Intro Report
+[!Logo](https://github.com/d0ntblink/heartbeats/blob/master/extras/heartbeats.png)
+# Heartbeats
 ### Gary Khodayari 27th, Feb 2022
 
 [Github Link](https://github.com/d0ntblink/heartbeats)
@@ -32,3 +33,6 @@ Tested
 * [Design](https://github.com/d0ntblink/heartbeats/blob/master/Documents/design.md)
 * [Testing](https://github.com/d0ntblink/heartbeats/blob/master/Documents/testing.md)
 * [Manual](https://github.com/d0ntblink/heartbeats/blob/master/Documents/user_manual.md)
+
+## Video
+[![Video showcase with my awesome and professional commentary](http://img.youtube.com/vi/nqTqN2qU_ec.jpg)](http://www.youtube.com/watch?v=nqTqN2qU_ec "heartbeat client server demo")
