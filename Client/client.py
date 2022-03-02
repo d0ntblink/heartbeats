@@ -33,6 +33,7 @@ print('''
 
 Welcome to the Heartbeats Client!
 Before sending messages, make sure the heartbeats server is already running and reachable.
+You can Access the most up-to-date version on: https://github.com/d0ntblink/heartbeats
 \n\n\
 ''')
 

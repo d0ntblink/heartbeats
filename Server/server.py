@@ -34,7 +34,7 @@ Welcome to the Heatbeats Server!
 Please make sure your heartbeats server is reachable by your clients.
 Heartbeats server is only made of one way client to server communication.
 Heartbeats sessions are not real TCP sessions, this is done to avoid the need to configure your firewall.
-You can Access the most up-to-date version on: https://github.com/d0ntblink/heartbeats192
+You can Access the most up-to-date version on: https://github.com/d0ntblink/heartbeats
 \n\n
 ''')
 #### VARIABLES
