@@ -8,8 +8,10 @@ from scapy.sendrecv import sniff, sr1, send, sr
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.INFO,
-                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
+logging.basicConfig(level=logging.INFO, #                            to enable debugging mode:
+                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n') # <-- comment this
+# logging.basicConfig(level=logging.DEBUG,
+#                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n') # <-- and uncomment this
 local_ip = get_if_addr(conf.iface)
 # https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters
 bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)

@@ -8,7 +8,7 @@ from scapy.sendrecv import sniff, send, sr, sr1
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.INFO, #                                           to enable debugging mode
+logging.basicConfig(level=logging.INFO, #                            to enable debugging mode:
                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n') # <-- comment this
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n') # <-- and uncomment this
