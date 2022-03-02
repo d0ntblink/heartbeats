@@ -66,6 +66,7 @@ def joining_threads():
 def analyze_pkt(packet):
     logging.debug("anlyze_pkt is starting ...")
     global ip_list_dict, ip_timeout_dict, local_ip
+    logging.debug(packet.summary())
     # ETHERNET WRAP
     ip_proto = packet[Ether].type
     # IP WRAP
@@ -83,7 +84,6 @@ def analyze_pkt(packet):
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
-        logging.debug(packet.summary())
         ip_list_dict[dst_ip] = "open"
         logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
     elif tcp_flag == "A" and pkt_size > 40:
@@ -96,12 +96,12 @@ def analyze_pkt(packet):
             print('''
 -- Ether INFO --
 ip proto : {ipp}
---IP INFO--
+-- IP INFO --
 dst ip : {dsi}
 src ip : {sri}
 ip ver : {ipv}
 pkt size : {pks}
---TCP INFO--
+-- TCP INFO --
 tcp flag: {tcf}
 src port : {srp}
 dest port : {dsp}
@@ -119,13 +119,11 @@ def send_msg(msg, dst_ip, sport, dport):
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
     packet = ip_packet/syn_packet
-    logging.debug(packet.show())
     synack_response = sr1(packet)
     seq += 1
     # sending the ACK back
     my_ack = synack_response.seq + 1
     ack_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
-    logging.debug(ack_packet.show())
     send(ip_packet/ack_packet)
     seq += 1
     # sending the ACK with message

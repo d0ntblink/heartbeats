@@ -31,7 +31,7 @@ print('''
     \|__|\|__|\|_______|\|__|\|__|\|__|\|__|    \|__|  \|_______|\|_______|\|__|\|__|    \|__| |\_________\\
                                                                                                \|_________|
 
-Welcome to the Heatbeats Client!
+Welcome to the Heartbeats Client!
 Before sending messages, make sure the heartbeats server is already running and reachable.
 \n\n\
 ''')
@@ -61,13 +61,11 @@ def send_msg(msg):
     # sending the syn package and receiving SYN_ACK
     syn_packet = TCP(sport=sport, dport=dport, flags='S', seq=seq)
     packet = ip_packet/syn_packet
-    logging.debug(packet.show())
     synack_response = sr1(packet)
     seq += 1
     # sending the ACK back
     my_ack = synack_response.seq + 1
     ack_packet = TCP(sport=sport, dport=dport, flags='A', seq=seq, ack=my_ack)
-    logging.debug(ack_packet.show())
     send(ip_packet/ack_packet)
     seq += 1
     # sending the ACK with message
@@ -80,11 +78,10 @@ def send_msg(msg):
 
 def looking_for_pulse(packet):
     logging.debug("looking_for_pulse is starting ...")
+    logging.debug(packet.summary())
     # IP WRAP
     src_ip = packet[IP].dst
-    pkt_size = packet[IP].len
     # TCP WRAP
-    tcp_flag = packet[TCP].flags
     try:
         tcp_data = packet[TCP].load
     except:
