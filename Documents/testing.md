@@ -169,7 +169,9 @@ ll
 | Thread Maker | The thread maker function is implement | *Passed* |
 | User Chosen Timeout | Server users asks for its heartbeat session timeout limit and uses it | *Passed* |  [Example](#user-chosen-timeout) |
 | Accepting Messages | The server accepts messages and displays to the terminal | *Passed* | [Example](#accepting-messages)
-| Heartbeat Counter | Program correctly keeps count of the time passed the last time it received a message from every of its heartbeat session companions | Passed | [Example](#heartbeat-counter) |
+| Heartbeat Counter | Program correctly keeps count of the time passed the last time it received a message from every of its heartbeat session companions | *Passed* | [Example](#heartbeat-counter) |
+| Heartbeat Retry | The server tries to contact the client for a user chosen amount. | *Passed* | [Example](#heartbeat-retry) |
+| Heartbeat Give Up | After the user chose amount of Pulse have been sent, server will give up and close the session. | *Passed* | [Example](#heartbeat-give-up) |
 | Termination | When Server Receives a terminate command it will close active heartbeat session for the soruce ip | *Passed* | [Example](#server-termination) |
 | Pulse Sending | Server sends a Pulse everytime a heartbeat session is timedout | *Passed* | [Example](#pulse-sending) |
 | Incorrect Input handling | Incorrect inputs dont break the program | *Passed* |  [Example](#server-incorrect-input-handling) |
@@ -237,9 +239,8 @@ You can Access the most up-to-date version on: https://github.com/d0ntblink/hear
 ```
 ### User Chosed Timeout
 ```
-
-How long should the server wait before sending a PULSE? (in seconds) 60
-
+How long should the server wait before sending a PULSE? (in seconds) 30
+How many PULSEs should the server send before giving up? 15
 
 Listening for messages ....
 ```
@@ -286,6 +287,27 @@ data : b'Whats up Doc?'
 
 
 2022-03-02 05:19:35,942 : Thread-2 -- 10.0.0.232 hasnt replied for 6 seconds
+```
+### Heartbeat Retry
+```
+2022-03-02 06:44:51,299 : Thread-2 -- Session with 10.0.0.232 timedout.
+
+2022-03-02 06:44:52,405 : Thread-2 -- Sent a pulse to 10.0.0.232.
+
+2022-03-02 06:45:03,517 : Thread-2 -- Sent a pulse to 10.0.0.232.
+
+2022-03-02 06:45:14,653 : Thread-2 -- Sent a pulse to 10.0.0.232.
+
+2022-03-02 06:45:16,756 : Thread-2 -- Sent a pulse to 10.0.0.232.
+
+```
+### Heartbeat Give Up
+```
+2022-03-02 06:45:20,948 : Thread-2 -- Sent a pulse to 10.0.0.232.
+
+2022-03-02 06:45:21,950 : Thread-2 -- giving up on 10.0.0.232.
+
+2022-03-02 06:45:21,950 : Thread-2 -- heartbeat session with 10.0.0.232 has been closed
 ```
 ### Server Termination
 ```
