@@ -26,7 +26,7 @@ Tested
 * Python
 
 ## Documents
-* [Report](https://github.com/d0ntblink/heartbeats/tree/master/Documents/report.pdf)
-* [Design](https://github.com/d0ntblink/heartbeats/blob/master/Documents/design.pdf)
-* [Testing](https://github.com/d0ntblink/heartbeats/blob/master/Documents/testing.pdf)
-* [Manual](https://github.com/d0ntblink/heartbeats/blob/master/Documents/user_manual.pdf)
+* [Report](https://github.com/d0ntblink/heartbeats/tree/master/Documents/report.md)
+* [Design](https://github.com/d0ntblink/heartbeats/blob/master/Documents/design.md)
+* [Testing](https://github.com/d0ntblink/heartbeats/blob/master/Documents/testing.md)
+* [Manual](https://github.com/d0ntblink/heartbeats/blob/master/Documents/user_manual.md)
