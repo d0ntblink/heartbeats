@@ -73,8 +73,8 @@ def analyze_pkt(packet):
     # ETHERNET WRAP
     ip_proto = packet[Ether].type
     # IP WRAP
-    dst_ip = packet[IP].src
-    src_ip = packet[IP].dst
+    dst_ip = packet[IP].dst
+    src_ip = packet[IP].src
     ip_ver = packet[IP].version
     pkt_size = packet[IP].len
     # TCP WRAP
@@ -90,16 +90,16 @@ def analyze_pkt(packet):
         if dst_ip in ip_list_dict:
                 if ip_list_dict[dst_ip] != "open":
                     ip_list_dict[dst_ip] = "open"
-                    logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
+                    logging.info("heartbeat session with {ip} has been opened".format(ip=src_ip))
         else:
             ip_list_dict[dst_ip] = "open"
-            logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
+            logging.info("heartbeat session with {ip} has been opened".format(ip=src_ip))
     elif tcp_flag == "A" and pkt_size > 40:
         ip_timeout_dict[dst_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_timeout_dict[dst_ip] = int(0)
             ip_list_dict[dst_ip] = "closed"
-            logging.info("heartbeat session with {ip} has been closed".format(ip=dst_ip))
+            logging.info("heartbeat session with {ip} has been closed".format(ip=src_ip))
         else:
             logging.info("{srip} said {msg}".format(srip=src_ip, msg=(str(tcp_data, 'utf-8'))))
             logging.debug('''
