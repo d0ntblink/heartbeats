@@ -1,4 +1,4 @@
-[!Logo](https://github.com/d0ntblink/heartbeats/blob/master/extras/heartbeats.png)
+![Logo](https://github.com/d0ntblink/heartbeats/blob/master/extras/heartbeats.png)
 # Heartbeats
 ### Gary Khodayari 27th, Feb 2022
 
