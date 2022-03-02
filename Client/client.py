@@ -88,10 +88,10 @@ def looking_for_pulse(packet):
     except:
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
-    if tcp_data == b'PULSE':
+    if tcp_data == b'MSG_HEARTBEAT':
         logging.info("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
-        send_msg(msg="STILL D.R.E")
-        logging.info("Responded back to the PULSE from {heartbeat_src}".format(heartbeat_src=src_ip))
+        send_msg(msg="MSG_HEARTBEAT")
+        logging.info("Responded back to the PULSE from {heartbeat_src} with a Pulse.".format(heartbeat_src=src_ip))
     else:
         pass
 
