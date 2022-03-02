@@ -33,3 +33,6 @@ This thread will keep the timer value increasing (unless its reset by thread 1) 
 
 I will use Berkley’s packet filtering scheme to filter the proper flag to print
 https://www.ibm.com/docs/en/qsip/7.3.2?topic=queries-berkeley-packet-filters
+
+### NOTES
+*The reason why I chose in program inputs rather than system arguments is, this makes this program even cross plafrom as Windows and BSD handel them diffrently and also this allows me further acces for making a better user interface*

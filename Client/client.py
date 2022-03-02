@@ -8,8 +8,10 @@ from scapy.sendrecv import sniff, send, sr, sr1
 from scapy.arch import get_if_addr, conf
 
 ### CONSTANTS
-logging.basicConfig(level=logging.INFO,
-                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
+logging.basicConfig(level=logging.INFO, #                                           to enable debugging mode
+                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n') # <-- comment this
+# logging.basicConfig(level=logging.DEBUG,
+#                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n') # <-- and uncomment this
 seq = 1
 local_ip = get_if_addr(conf.iface)
 sport = randint(1024,65353)
@@ -88,7 +90,6 @@ def looking_for_pulse(packet):
     except:
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
-    logging.debug(packet.show())
     if tcp_data == b'PULSE':
         logging.info("Recieved a Pulse from {heartbeat_src}".format(heartbeat_src=src_ip))
         send_msg(msg="STILL D.R.E")
