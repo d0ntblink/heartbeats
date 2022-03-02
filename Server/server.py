@@ -17,6 +17,7 @@ local_ip = get_if_addr(conf.iface)
 bp_filter = "port 11414 && (dst host {localip})".format(localip=local_ip)
 ip_list_dict = {}
 ip_timeout_dict = {}
+pulse_send_limit_dict = {}
 thread_list = []
 seq = 1
 logging.info('local ip : {}'.format(local_ip))
@@ -41,6 +42,7 @@ You can Access the most up-to-date version on: https://github.com/d0ntblink/hear
 while True:
     try:
         timeout_limit = int(input("How long should the server wait before sending a PULSE? (in seconds) "))
+        pulse_send_limit = int(input("How many PULSEs should the server send before giving up? "))
         print("\n\n\nListening for messages ....")
         break
     except:
@@ -96,8 +98,10 @@ def analyze_pkt(packet):
             logging.info("heartbeat session with {ip} has been opened".format(ip=src_ip))
     elif tcp_flag == "A" and pkt_size > 40:
         ip_timeout_dict[src_ip] = int(0)
+        pulse_send_limit_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
             ip_timeout_dict[src_ip] = int(0)
+            pulse_send_limit_dict[src_ip] = int(0)
             ip_list_dict[src_ip] = "closed"
             logging.info("heartbeat session with {ip} has been closed".format(ip=src_ip))
         else:
@@ -145,7 +149,7 @@ def send_msg(msg, dst_ip, sport, dport):
 
 def heartbeat():
     logging.debug("heartbeat is starting ...")
-    global ip_list_dict, ip_timeout_dict, timeout_limit
+    global ip_list_dict, ip_timeout_dict, timeout_limit, pulse_send_limit_dict, pulse_send_limit
     while True:
         sleep(1)
         for ip, sesh_stat in ip_list_dict.items():
@@ -153,10 +157,16 @@ def heartbeat():
                 ip_timeout_dict[ip] += 1
                 logging.debug('{ip} hasnt replied for {sec} seconds'.format(ip=ip, sec=ip_timeout_dict[ip]))
                 if ip_timeout_dict[ip] >= timeout_limit:
-                    logging.warning("Session with {} timedout.".format(ip))
-                    # Designated heartbeat port.
-                    send_msg(msg="PULSE", dst_ip=ip, sport=randint(1024,65353), dport=11415)
-                    logging.info("Sent a pulse to {}.".format(ip))
+                    if pulse_send_limit_dict[ip] < pulse_send_limit:
+                        logging.warning("Session with {} timedout.".format(ip))
+                        # Designated heartbeat port.
+                        send_msg(msg="MSG_HEARTBEAT", dst_ip=ip, sport=randint(1024,65353), dport=11415)
+                        pulse_send_limit_dict[ip] += 1
+                        logging.info("Sent a pulse to {}.".format(ip))
+                    else:
+                        logging.info("giving up on {ip}.".format(ip=ip))
+                        ip_list_dict[ip] = "closed"
+                        logging.info("heartbeat session with {ip} has been closed".format(ip=ip))
                 else:
                     pass
             else:
