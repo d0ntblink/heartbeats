@@ -108,7 +108,7 @@ def user_interface():
 What would like to do:
 S) Send a customized message ->
 Q) Terminate session and change server IP ->
-E) Exit the program ->
+E) Exit the program (REMOVED. DO NOT USE) -> 
 \n
 ''').lower()
         sleep(1)
@@ -121,8 +121,8 @@ E) Exit the program ->
             send_msg(msg="TERMINATE")
             logging.debug("sent a terminate command")
             user_interface()
-        elif usr_input == "e" :
-            sys.exit()
+        # elif usr_input == "e" :
+        #     sys.exit()
         else :
             logging.warning("Unknown Input, Please try again!")
             continue
