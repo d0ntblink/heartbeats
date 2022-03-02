@@ -87,18 +87,18 @@ def analyze_pkt(packet):
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
-        if dst_ip in ip_list_dict:
-                if ip_list_dict[dst_ip] != "open":
-                    ip_list_dict[dst_ip] = "open"
+        if src_ip in ip_list_dict:
+                if ip_list_dict[src_ip] != "open":
+                    ip_list_dict[src_ip] = "open"
                     logging.info("heartbeat session with {ip} has been opened".format(ip=src_ip))
         else:
-            ip_list_dict[dst_ip] = "open"
+            ip_list_dict[src_ip] = "open"
             logging.info("heartbeat session with {ip} has been opened".format(ip=src_ip))
     elif tcp_flag == "A" and pkt_size > 40:
-        ip_timeout_dict[dst_ip] = int(0)
+        ip_timeout_dict[src_ip] = int(0)
         if tcp_data == b'TERMINATE':
-            ip_timeout_dict[dst_ip] = int(0)
-            ip_list_dict[dst_ip] = "closed"
+            ip_timeout_dict[src_ip] = int(0)
+            ip_list_dict[src_ip] = "closed"
             logging.info("heartbeat session with {ip} has been closed".format(ip=src_ip))
         else:
             logging.info("{srip} said {msg}".format(srip=src_ip, msg=(str(tcp_data, 'utf-8'))))
