@@ -41,7 +41,7 @@ You can Access the most up-to-date version on: https://github.com/d0ntblink/hear
 while True:
     try:
         timeout_limit = int(input("How long should the server wait before sending a PULSE? (in seconds) "))
-        print("\n\n\n")
+        print("\n\n\nListening for messages ....")
         break
     except:
         logging.warning("Something went wrong, try again.")
@@ -87,12 +87,13 @@ def analyze_pkt(packet):
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
     if tcp_flag == "S":
-        try:
-            if ip_list_dict[dst_ip] != "open":
-                ip_list_dict[dst_ip] = "open"
-                logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
-        except:
-            pass
+        if dst_ip in ip_list_dict:
+                if ip_list_dict[dst_ip] != "open":
+                    ip_list_dict[dst_ip] = "open"
+                    logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
+        else:
+            ip_list_dict[dst_ip] = "open"
+            logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
     elif tcp_flag == "A" and pkt_size > 40:
         ip_timeout_dict[dst_ip] = int(0)
         if tcp_data == b'TERMINATE':
