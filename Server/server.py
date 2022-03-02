@@ -85,7 +85,7 @@ def analyze_pkt(packet):
     except:
         tcp_data = "0x00"
     # WHAT TO DO WITH PACKETS
-    if tcp_flag == "S":
+    if tcp_flag == "S" and ip_list_dict[dst_ip] != "open":
         ip_list_dict[dst_ip] = "open"
         logging.info("heartbeat session with {ip} has been opened".format(ip=dst_ip))
     elif tcp_flag == "A" and pkt_size > 40:
