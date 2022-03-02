@@ -101,7 +101,8 @@ def analyze_pkt(packet):
             ip_list_dict[dst_ip] = "closed"
             logging.info("heartbeat session with {ip} has been closed".format(ip=dst_ip))
         else:
-            print('''
+            logging.info("{srip} said {msg}".format(srip=src_ip, msg=(str(tcp_data, 'utf-8'))))
+            logging.debug('''
 -- Ether INFO --
 ip proto : {ipp}
 -- IP INFO --
