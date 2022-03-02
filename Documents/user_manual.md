@@ -1,5 +1,5 @@
-# heartbeats
-## Gary Khodayari 27th, Feb 2022
+# Heartbeats User Guide
+### Gary Khodayari 27th, Feb 2022
 
 [Github Link](https://github.com/d0ntblink/heartbeats)
 
@@ -14,8 +14,8 @@ Python Liberaries:
   * time (existing)
   * random (existing)
 
-Optional:
-  * python3-pip
+*Optional:*
+  * *python3-pip*
 
 Copy and paste the command below to install all the Python3 liberaries.
 ```
@@ -45,4 +45,17 @@ python3 server.py
 git clone https://github.com/d0ntblink/heartbeats
 cd heartbeats/Client/
 python3 server.py
+```
+
+#### Debug Mode
+**To enable debug mode in either program:**
+1) Comment the line below
+```
+logging.basicConfig(level=logging.INFO,
+                    format='\n%(asctime)s : %(threadName)s -- %(message)s\n') 
+```
+2) Uncomment the line below
+```
+# logging.basicConfig(level=logging.DEBUG,
+#                     format='\n%(asctime)s : %(threadName)s -- %(message)s\n')
 ```
